@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sistema de Registro – Iglesia</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --blue:#0e2156;--blue-mid:#1a3478;--blue-light:#2a4a9c;
+  --maroon:#8b1a1a;--maroon-light:#b52020;
+  --cream:#f5f7fa;--cream2:#e8ecf4;
+  --white:#ffffff;--red:#c0392b;--text:#1a2340;--border:#c4cde0;
+  --accent:#d4af37;--accent-light:#e8cc55;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+h1,h2,h3{font-family:'Cinzel',serif}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--cream2)}::-webkit-scrollbar-thumb{background:var(--blue-light);border-radius:3px}
+.screen{display:none;min-height:100vh}.screen.active{display:flex;flex-direction:column}
+
+/* SETUP */
+#setup-screen{align-items:center;justify-content:center;background:linear-gradient(135deg,var(--blue) 0%,var(--blue-mid) 100%);padding:20px}
+.setup-card{background:var(--white);border-radius:14px;padding:36px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.setup-card h2{color:var(--blue);margin-bottom:6px;text-align:center;font-size:1.35rem}
+.setup-card>p{color:#666;font-size:.84rem;text-align:center;margin-bottom:22px;line-height:1.5}
+.steps-box{background:var(--blue);border-radius:10px;padding:18px 20px;margin-bottom:20px}
+.step{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;color:#ccd4ee;font-size:.81rem;line-height:1.6}
+.step:last-child{margin-bottom:0}
+.step-num{background:var(--accent);color:var(--blue);font-weight:700;font-size:.73rem;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step b{color:var(--accent-light)}
+.code-block{background:#060f2a;border:1px solid #2a4a9c;border-radius:8px;padding:12px 14px;font-family:monospace;font-size:.7rem;color:#7fdbca;white-space:pre;overflow-x:auto;margin:8px 0;position:relative;line-height:1.5}
+.copy-btn{position:absolute;top:8px;right:8px;background:var(--accent);color:var(--blue);border:none;border-radius:5px;padding:3px 10px;font-size:.7rem;font-weight:700;cursor:pointer}
+.copy-btn:hover{background:var(--accent-light)}
+
+/* LOGIN */
+#login-screen{align-items:center;justify-content:center;background:linear-gradient(160deg,var(--blue) 0%,var(--blue-mid) 55%,var(--blue-light) 100%)}
+.cross-bg{position:fixed;inset:0;opacity:.04;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect x='52' y='10' width='16' height='100' fill='white'/%3E%3Crect x='20' y='35' width='80' height='16' fill='white'/%3E%3C/svg%3E");background-size:120px}
+.login-card{background:var(--white);border-radius:16px;padding:40px 36px;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,.6);position:relative;z-index:1;animation:fadeIn .3s ease}
+.login-logo{text-align:center;margin-bottom:26px}
+.login-logo img{width:90px;height:90px;object-fit:contain;margin-bottom:10px;filter:drop-shadow(0 2px 6px rgba(14,33,86,.2))}
+.login-logo h1{color:var(--blue);font-size:1.3rem;letter-spacing:.05em;line-height:1.3}
+.login-logo p{color:#888;font-size:.78rem;margin-top:5px}
+
+/* FORMS */
+.form-group{margin-bottom:15px}
+.form-group label{display:block;font-size:.77rem;font-weight:700;color:var(--blue);margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase}
+.form-group input,.form-group select{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:#fff;transition:border .2s,box-shadow .2s;outline:none}
+.form-group input:focus,.form-group select:focus{border-color:var(--blue-light);box-shadow:0 0 0 3px rgba(42,74,156,.15)}
+.form-group select{cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border:none;border-radius:8px;font-family:'Lato',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.03em}
+.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:var(--blue-mid);transform:translateY(-1px);box-shadow:0 4px 14px rgba(14,33,86,.4)}
+.btn-danger{background:var(--red);color:#fff}.btn-danger:hover{background:#e74c3c}
+.btn-secondary{background:var(--blue-mid);color:#fff}.btn-secondary:hover{background:var(--blue-light)}
+.btn-ghost{background:transparent;color:var(--blue);border:1.5px solid var(--border)}.btn-ghost:hover{background:var(--cream2)}
+.btn-sm{padding:6px 13px;font-size:.79rem}.btn-xs{padding:4px 9px;font-size:.74rem}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* APP */
+#app-screen{background:var(--cream)}
+.topbar{background:var(--blue);padding:0 22px;height:58px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,.3);position:sticky;top:0;z-index:100}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.topbar-logo{width:36px;height:36px;object-fit:contain;filter:brightness(0) invert(1)}
+.topbar-brand span{font-family:'Cinzel',serif;color:var(--white);font-size:1rem;letter-spacing:.04em}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.user-badge{background:var(--blue-mid);padding:5px 13px;border-radius:20px;border:1px solid rgba(255,255,255,.15)}
+.user-badge .role{font-size:.68rem;color:var(--accent-light);text-transform:uppercase;letter-spacing:.06em}
+.user-badge .name{font-size:.83rem;color:#fff;font-weight:700}
+.sync-status{font-size:.71rem;padding:4px 9px;border-radius:12px;font-weight:700}
+.sync-ok{background:#1e8449;color:#fff}.sync-err{background:var(--red);color:#fff}.sync-ing{background:#7d6608;color:#fff}
+
+.nav-tabs{display:flex;background:var(--blue-mid);border-bottom:3px solid var(--accent);overflow-x:auto}
+.nav-tab{padding:13px 20px;color:rgba(255,255,255,.6);font-size:.82rem;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;transition:all .2s;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-3px}
+.nav-tab:hover{color:#fff;background:rgba(255,255,255,.07)}
+.nav-tab.active{color:var(--accent-light);border-bottom-color:var(--accent);background:rgba(212,175,55,.1)}
+
+.tab-content{display:none;padding:26px 22px}.tab-content.active{display:block}
+.section-title{font-family:'Cinzel',serif;color:var(--blue);font-size:1.15rem;margin-bottom:18px;padding-bottom:9px;border-bottom:2px solid var(--blue-light);display:flex;align-items:center;gap:10px}
+
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.07);border:1px solid var(--border);overflow:hidden;animation:fadeIn .25s ease}
+.card-header{background:var(--blue);padding:13px 18px;display:flex;align-items:center;justify-content:space-between}
+.card-header h3{color:var(--accent-light);font-family:'Cinzel',serif;font-size:.93rem}
+.card-body{padding:18px}
+
+.table-wrapper{overflow-x:auto;border-radius:8px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.81rem}
+thead{background:var(--blue)}
+th{color:var(--accent-light);font-weight:700;padding:11px 12px;text-align:left;letter-spacing:.04em;font-size:.72rem;text-transform:uppercase;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #dde3f0;color:var(--text);vertical-align:middle}
+tr:hover td{background:#eef1f9}
+tr:last-child td{border-bottom:none}
+.actions-cell{display:flex;gap:5px;flex-wrap:wrap}
+.empty-row td{text-align:center;color:#bbb;padding:34px;font-style:italic}
+
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.69rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.badge-admin{background:var(--blue);color:var(--accent-light)}
+.badge-secre{background:#27ae60;color:#fff}
+.badge-pastor{background:var(--maroon);color:#fff}
+.badge-a{background:#e0e8f7;color:var(--blue);border:1px solid #b0c0e8}
+.badge-b{background:#fef9e7;color:#d68910;border:1px solid #f9e79f}
+
+.alert{padding:10px 14px;border-radius:8px;margin-bottom:13px;font-size:.83rem;display:flex;align-items:center;gap:8px}
+.alert-success{background:#d5f5e3;color:#1e8449;border:1px solid #a9dfbf}
+.alert-error{background:#fadbd8;color:#922b21;border:1px solid #f1948a}
+.alert-info{background:#dde8f7;color:var(--blue);border:1px solid #b0c4e8}
+.alert-warn{background:#fef9e7;color:#7d6608;border:1px solid #f9e79f}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--cream);border-radius:12px;width:100%;max-width:590px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal-header{background:var(--blue);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;border-radius:12px 12px 0 0;position:sticky;top:0;z-index:1}
+.modal-header h3{color:var(--accent-light);font-family:'Cinzel',serif}
+.modal-close{background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;opacity:.7}.modal-close:hover{opacity:1}
+.modal-body{padding:18px}
+.modal-footer{padding:13px 18px;border-top:1px solid var(--border);display:flex;gap:9px;justify-content:flex-end}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:13px;margin-bottom:22px}
+.stat-card{background:var(--blue);border-radius:10px;padding:17px;text-align:center}
+.stat-card .num{font-family:'Cinzel',serif;font-size:1.85rem;color:var(--accent-light);line-height:1}
+.stat-card .lbl{font-size:.72rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.06em;margin-top:5px}
+
+.badge-cargo{display:inline-block;padding:2px 9px;border-radius:12px;font-size:.75rem;font-weight:700}
+.cargo-req{background:#dde8f7;color:var(--blue);border:1px solid #b0c4e8}
+.cargo-opt{background:#e8f5ee;color:#1e6b38;border:1px solid #a3d4b4}
+.cargo-empty{background:#f5f5f5;color:#aaa;border:1px dashed #ccc}
+.search-bar input{flex:1;min-width:180px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+@media(max-width:570px){.form-grid{grid-template-columns:1fr}}
+
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:38px}
+.pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:.92rem;color:#aaa;padding:4px}
+.phone-wrap{display:flex;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;transition:border .2s,box-shadow .2s;background:#fff}
+.phone-wrap:focus-within{border-color:var(--blue-light);box-shadow:0 0 0 3px rgba(42,74,156,.15)}
+.phone-prefix{background:var(--cream2);padding:10px 12px;font-size:.9rem;font-weight:700;color:var(--blue);white-space:nowrap;border-right:1.5px solid var(--border)}
+.phone-wrap input{border:none!important;border-radius:0!important;box-shadow:none!important;outline:none;flex:1;padding:10px 12px;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);background:transparent}
+.phone-wrap input:focus{box-shadow:none!important}
+.phone-hint{font-size:.73rem;color:#aaa;margin-top:4px}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+
+@media(max-width:600px){
+  .login-card{padding:30px 18px}
+  .tab-content{padding:16px 10px}
+  .topbar{padding:0 10px}
+  .nav-tab{padding:11px 12px;font-size:.72rem}
+  th,td{padding:8px 9px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== SETUP (deshabilitado) ===== -->
+<div id="setup-screen" class="screen" style="display:none!important">
+  <div class="setup-card">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:2.2rem">✝</div>
+      <h2>Conectar con Google Drive</h2>
+      <p>Solo necesitas tu cuenta de Google Drive. Sin Cloud Console, sin tarjeta de crédito.</p>
+    </div>
+
+    <div class="steps-box">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>Abre <b>drive.google.com</b> → crea una <b>Hoja de cálculo de Google</b> nueva (nómbrala como quieras, ej: <i>"Registro Iglesia"</i>)</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>Con la hoja abierta: menú superior <b>Extensiones → Apps Script</b></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>Borra el código existente y <b>pega este código exactamente</b>:
+          <div class="code-block" id="script-code">function doGet(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var action=e.parameter.action;
+  var sheet=e.parameter.sheet;
+  try{
+    if(action==='read'){
+      var sh=ss.getSheetByName(sheet);
+      if(!sh)sh=ss.insertSheet(sheet);
+      return out({data:sh.getDataRange().getValues()});
+    }
+    if(action==='write'){
+      var sh=ss.getSheetByName(sheet);
+      if(!sh)sh=ss.insertSheet(sheet);
+      var rows=JSON.parse(e.parameter.rows);
+      sh.clearContents();
+      if(rows.length>0)sh.getRange(1,1,rows.length,rows[0].length).setValues(rows);
+      return out({ok:true});
+    }
+    if(action==='ping')return out({ok:true,name:ss.getName()});
+  }catch(err){return out({error:err.toString()});}
+  return out({error:'unknown'});
+}
+function out(o){
+  return ContentService.createTextOutput(JSON.stringify(o))
+    .setMimeType(ContentService.MimeType.JSON);
+}</div>
+          <button class="copy-btn" onclick="copyScript()">Copiar</button>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>Guarda (Ctrl+S) → botón <b>Implementar → Nueva implementación</b><br>
+          · Tipo: <b>Aplicación web</b><br>
+          · Ejecutar como: <b>Yo</b><br>
+          · Quién tiene acceso: <b>Cualquier persona</b><br>
+          → <b>Implementar</b> → acepta permisos de Google</div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div>Copia la <b>URL de la aplicación web</b> que aparece y pégala abajo</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>URL de la Aplicación Web (Apps Script)</label>
+      <input type="text" id="setup-url" placeholder="https://script.google.com/macros/s/AKfy.../exec"/>
+    </div>
+    <div id="setup-alert"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="initDrive()">
+      ✅ Conectar con Google Drive
+    </button>
+    <div style="text-align:center;margin-top:13px">
+      <a href="#" onclick="demoMode()" style="font-size:.78rem;color:var(--navy);opacity:.5;text-decoration:underline">
+        Probar en modo demostración (sin guardar en Drive)
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen" class="screen active">
+  <div class="cross-bg"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="https://ipechi.cl/wp-content/uploads/2024/10/cropped-cropped-IPECHI_Logo_03-1.png" alt="IPECHI" onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'"/>
+      <div id="logo-fallback" style="display:none;font-size:3rem;color:var(--blue);margin-bottom:8px">✝</div>
+      <h1>Iglesia Pentecostal de Chile</h1>
+      <p id="login-sheet-name">Sistema de Registro de Miembros</p>
+    </div>
+    <div id="login-alert"></div>
+    <div class="form-group">
+      <label>Usuario</label>
+      <input type="text" id="login-user" placeholder="Ingrese su usuario" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <div class="form-group">
+      <label>Contraseña</label>
+      <div class="pw-wrap">
+        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <button class="pw-toggle" onclick="togglePw('login-pass',this)">👁</button>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="doLogin()">
+      Iniciar Sesión
+    </button>
+    <div style="text-align:center;margin-top:16px;font-size:.73rem;color:#bbb">Sistema confidencial — Iglesia</div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app-screen" class="screen">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <img class="topbar-logo" src="https://ipechi.cl/wp-content/uploads/2024/10/cropped-cropped-IPECHI_Logo_03-1.png" alt="IPECHI" onerror="this.style.display='none'"/>
+      <span>Iglesia Pentecostal de Chile</span>
+    </div>
+    <div class="topbar-right">
+      <span id="sync-badge" class="sync-status" style="display:none"></span>
+      <div class="user-badge">
+        <div class="role" id="topbar-role"></div>
+        <div class="name" id="topbar-name"></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <div class="nav-tab active" data-tab="dashboard" onclick="switchTab(this)">📊 Panel</div>
+    <div class="nav-tab" data-tab="add" onclick="switchTab(this)">➕ Agregar</div>
+    <div class="nav-tab" data-tab="members" onclick="switchTab(this)">📋 Miembros</div>
+    <div class="nav-tab" data-tab="liderazgo" onclick="switchTab(this)">🏛 Liderazgo Local</div>
+    <div class="nav-tab" data-tab="directiva" onclick="switchTab(this)">⛪ Directiva General</div>
+    <div class="nav-tab tab-pastor-admin" data-tab="users" onclick="switchTab(this)" style="display:none">👥 Usuarios</div>
+    <div class="nav-tab tab-admin-only" data-tab="passwords" onclick="switchTab(this)" style="display:none">🔐 Contraseñas</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="tab-dashboard" class="tab-content active">
+    <div class="section-title">✝ Panel General</div>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="card">
+      <div class="card-header"><h3>Últimos Registros</h3></div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Nombre</th><th>Zona</th><th>Local</th><th>Estado Civil</th><th>Teléfono</th></tr></thead>
+            <tbody id="dash-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD -->
+  <div id="tab-add" class="tab-content">
+    <div class="section-title">➕ Agregar Nuevo Miembro</div>
+    <div class="card">
+      <div class="card-body">
+        <div id="add-alert"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nombres *</label>
+            <input type="text" id="f-nombres" placeholder="Ej: María Inés"/>
+          </div>
+          <div class="form-group">
+            <label>Apellidos *</label>
+            <input type="text" id="f-apellidos" placeholder="Ej: González Rojas"/>
+          </div>
+          <div class="form-group">
+            <label>Zona *</label>
+            <select id="f-zona" onchange="updateLocales('f-zona','f-local')">
+              <option value="">— Seleccione —</option>
+              <option value="A">Zona A</option>
+              <option value="B">Zona B</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Local *</label>
+            <select id="f-local"><option value="">— Primero elija zona —</option></select>
+          </div>
+          <div class="form-group">
+            <label>Fecha de Nacimiento</label>
+            <input type="date" id="f-nacimiento"/>
+          </div>
+          <div class="form-group">
+            <label>Estado Civil</label>
+            <select id="f-estado">
+              <option value="">— Seleccione —</option>
+              <option>Soltero/a</option><option>Casado/a</option>
+              <option>Viudo/a</option><option>Divorciado/a</option><option>Separado/a</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha de Casamiento</label>
+            <input type="date" id="f-casamiento"/>
+          </div>
+          <div class="form-group">
+            <label>Nombre Esposo/a</label>
+            <input type="text" id="f-esposo" placeholder="Nombre del cónyuge"/>
+          </div>
+          <div class="form-group">
+            <label>N° Teléfono</label>
+            <div class="phone-wrap">
+              <span class="phone-prefix">+569</span>
+              <input type="text" id="f-telefono" placeholder="12345678" maxlength="8"
+                oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)"
+                onblur="validatePhone(this,'add-alert')"/>
+            </div>
+            <div class="phone-hint">Solo los 8 dígitos restantes (sin espacios)</div>
+          </div>
+          <div class="form-group">
+            <label>Profesión u Oficio</label>
+            <input type="text" id="f-profesion" placeholder="Ej: Agricultor, Profesora..."/>
+          </div>
+        </div>
+        <div style="display:flex;gap:9px;margin-top:8px">
+          <button class="btn btn-primary" onclick="saveMember()">💾 Guardar Miembro</button>
+          <button class="btn btn-ghost" onclick="clearAddForm()">🗑 Limpiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMBERS -->
+  <div id="tab-members" class="tab-content">
+    <div class="section-title">📋 Registro de Miembros</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Lista Completa</h3>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <select id="filter-zona" style="background:transparent;border:1px solid var(--gold);color:var(--gold-light);border-radius:6px;padding:5px 9px;font-size:.77rem;cursor:pointer" onchange="renderMembers()">
+            <option value="">Todas las Zonas</option>
+            <option value="A">Zona A</option>
+            <option value="B">Zona B</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" onclick="exportCSV()">📥 CSV</button>
+          <button class="btn btn-ghost btn-sm" onclick="loadAll()">🔄 Sync</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding:13px">
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="🔍 Buscar nombre, local, profesión..." oninput="renderMembers()"/>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Nombres</th><th>Apellidos</th><th>Zona</th><th>Local</th>
+              <th>F.Nac.</th><th>Estado</th><th>Cónyuge</th><th>Teléfono</th><th>Profesión</th>
+              <th>Acciones</th>
+            </tr></thead>
+            <tbody id="members-tbody"></tbody>
+          </table>
+        </div>
+        <div id="members-count" style="margin-top:9px;font-size:.77rem;color:#999"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div id="tab-users" class="tab-content">
+    <div class="section-title">👥 Gestión de Usuarios</div>
+    <div id="users-alert"></div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <div style="flex:1;min-width:255px">
+        <div class="card">
+          <div class="card-header"><h3>Crear / Editar Usuario</h3></div>
+          <div class="card-body">
+            <input type="hidden" id="edit-uid"/>
+            <div class="form-group">
+              <label>Usuario (login)</label>
+              <input type="text" id="u-username" placeholder="ej: juan.pastor"/>
+            </div>
+            <div class="form-group">
+              <label>Nombre para mostrar</label>
+              <input type="text" id="u-nombre" placeholder="Nombre completo"/>
+            </div>
+            <div class="form-group">
+              <label>Rol</label>
+              <select id="u-rol">
+                <option value="Secretario">Secretario/a</option>
+                <option value="Pastor">Pastor</option>
+                <option value="Administrador">Administrador</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Contraseña</label>
+              <div class="pw-wrap">
+                <input type="password" id="u-pass" placeholder="Mínimo 6 caracteres"/>
+                <button class="pw-toggle" onclick="togglePw('u-pass',this)">👁</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:7px">
+              <button class="btn btn-primary" onclick="saveUser()">💾 Guardar</button>
+              <button class="btn btn-ghost" onclick="clearUserForm()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:2;min-width:270px">
+        <div class="card">
+          <div class="card-header"><h3>Usuarios del Sistema</h3></div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Acciones</th></tr></thead>
+                <tbody id="users-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSWORDS -->
+  <div id="tab-passwords" class="tab-content">
+    <div class="section-title">🔐 Ver Contraseñas — Solo Administrador</div>
+    <div class="alert alert-warn">⚠ Esta sección es altamente confidencial. No comparta esta información.</div>
+    <div class="card">
+      <div class="card-header"><h3>Contraseñas del Sistema</h3></div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Contraseña</th></tr></thead>
+            <tbody id="passwords-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIDERAZGO LOCAL -->
+  <div id="tab-liderazgo" class="tab-content">
+    <div class="section-title">🏛 Liderazgo Local</div>
+    <div id="lid-alert"></div>
+
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+      <!-- Formulario asignación -->
+      <div style="flex:1;min-width:270px">
+        <div class="card">
+          <div class="card-header"><h3>Asignar Cargo</h3></div>
+          <div class="card-body">
+            <input type="hidden" id="lid-edit-id"/>
+            <div class="form-group">
+              <label>Zona *</label>
+              <select id="lid-zona" onchange="lidUpdateLocal()">
+                <option value="">— Seleccione —</option>
+                <option value="A">Zona A</option>
+                <option value="B">Zona B</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Local *</label>
+              <select id="lid-local" onchange="lidUpdateMiembro()">
+                <option value="">— Primero elija zona —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Cargo *</label>
+              <select id="lid-cargo">
+                <option value="">— Seleccione cargo —</option>
+                <option>Guía ★</option>
+                <option>Sub-Guía</option>
+                <option>Líder Voluntarios</option>
+                <option>Líder Dorcas</option>
+                <option>Líder Jóvenes</option>
+                <option>Tía de Niños</option>
+                <option>Jefe de Coro</option>
+                <option>Ayudante de Coro</option>
+                <option>Secretario/a ★</option>
+                <option>Tesorero/a ★</option>
+              </select>
+              <div style="font-size:.72rem;color:#888;margin-top:4px">★ = cargo obligatorio por local</div>
+            </div>
+            <div class="form-group">
+              <label>Miembro *</label>
+              <select id="lid-miembro">
+                <option value="">— Primero elija local —</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-primary" onclick="saveLiderazgo()">💾 Asignar</button>
+              <button class="btn btn-ghost" onclick="clearLidForm()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtro de vista -->
+      <div style="flex:2;min-width:280px">
+        <div class="card">
+          <div class="card-header">
+            <h3>Cargos Asignados</h3>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <select id="lid-filter-zona" style="background:transparent;border:1px solid var(--accent);color:var(--accent-light);border-radius:6px;padding:4px 8px;font-size:.77rem;cursor:pointer" onchange="lidFilterLocal();renderLiderazgo()">
+                <option value="">Todas las Zonas</option>
+                <option value="A">Zona A</option>
+                <option value="B">Zona B</option>
+              </select>
+              <select id="lid-filter-local" style="background:transparent;border:1px solid var(--accent);color:var(--accent-light);border-radius:6px;padding:4px 8px;font-size:.77rem;cursor:pointer" onchange="renderLiderazgo()">
+                <option value="">Todos los Locales</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>Zona</th><th>Local</th><th>Cargo</th><th>Miembro</th><th>Acciones</th></tr></thead>
+                <tbody id="liderazgo-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cargos faltantes por local -->
+        <div id="lid-missing-card" style="margin-top:14px;display:none">
+          <div class="card">
+            <div class="card-header" style="background:var(--maroon)"><h3>⚠ Cargos Obligatorios Faltantes</h3></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrapper">
+                <table>
+                  <thead><tr><th>Zona</th><th>Local</th><th>Cargo Faltante</th></tr></thead>
+                  <tbody id="lid-missing-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIRECTIVA GENERAL -->
+  <div id="tab-directiva" class="tab-content">
+    <div class="section-title">⛪ Directiva General de la Iglesia</div>
+    <div id="dir-alert"></div>
+
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <!-- Formulario -->
+      <div style="flex:1;min-width:260px">
+        <div class="card">
+          <div class="card-header"><h3>Asignar Cargo General</h3></div>
+          <div class="card-body">
+            <input type="hidden" id="dir-edit-id"/>
+            <div class="form-group">
+              <label>Cargo *</label>
+              <select id="dir-cargo">
+                <option value="">— Seleccione cargo —</option>
+                <optgroup label="Autoridades">
+                  <option>Pastor</option>
+                  <option>Ayudante del Pastor</option>
+                  <option>Pastora</option>
+                  <option>Ayudante de Pastora</option>
+                </optgroup>
+                <optgroup label="Líderes con Ayudante">
+                  <option>Jefe Coro Oficial</option>
+                  <option>Ayudante Jefe Coro Oficial</option>
+                  <option>Líder Voluntarios General</option>
+                  <option>Ayudante Líder Voluntarios</option>
+                  <option>Líder Jóvenes General</option>
+                  <option>Ayudante Líder Jóvenes</option>
+                  <option>Líder Niños General</option>
+                  <option>Ayudante Líder Niños</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Miembro *</label>
+              <select id="dir-miembro">
+                <option value="">— Seleccione miembro —</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-primary" onclick="saveDirectiva()">💾 Asignar</button>
+              <button class="btn btn-ghost" onclick="clearDirForm()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla directiva -->
+      <div style="flex:2;min-width:280px">
+        <div class="card">
+          <div class="card-header"><h3>Directiva Actual</h3></div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>Cargo</th><th>Miembro Asignado</th><th>Acciones</th></tr></thead>
+                <tbody id="directiva-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- EDIT MEMBER MODAL -->
+<div id="edit-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✏ Editar Miembro</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id"/>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombres</label><input type="text" id="e-nombres" placeholder="Ej: María Inés"/>
+        </div>
+        <div class="form-group">
+          <label>Apellidos</label><input type="text" id="e-apellidos" placeholder="Ej: González Rojas"/>
+        </div>
+        <div class="form-group">
+          <label>Zona</label>
+          <select id="e-zona" onchange="updateLocales('e-zona','e-local')">
+            <option value="">—</option><option value="A">Zona A</option><option value="B">Zona B</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Local</label>
+          <select id="e-local"><option value="">—</option></select>
+        </div>
+        <div class="form-group">
+          <label>Fecha Nacimiento</label><input type="date" id="e-nacimiento"/>
+        </div>
+        <div class="form-group">
+          <label>Estado Civil</label>
+          <select id="e-estado">
+            <option value="">—</option><option>Soltero/a</option><option>Casado/a</option>
+            <option>Viudo/a</option><option>Divorciado/a</option><option>Separado/a</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha Casamiento</label><input type="date" id="e-casamiento"/>
+        </div>
+        <div class="form-group">
+          <label>Nombre Esposo/a</label><input type="text" id="e-esposo"/>
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <div class="phone-wrap">
+            <span class="phone-prefix">+569</span>
+            <input type="text" id="e-telefono" placeholder="12345678" maxlength="8"
+              oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)"
+              onblur="validatePhone(this,'edit-phone-alert')"/>
+          </div>
+          <div id="edit-phone-alert"></div>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Profesión u Oficio</label><input type="text" id="e-profesion"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="updateMember()">💾 Guardar Cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div id="pw-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closePwModal()">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-header">
+      <h3>🔑 Cambiar Contraseña</h3>
+      <button class="modal-close" onclick="closePwModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="pw-modal-alert"></div>
+      <input type="hidden" id="pw-target-id"/>
+      <div class="form-group">
+        <label>Contraseña Actual</label>
+        <div class="pw-wrap">
+          <input type="password" id="pw-current"/>
+          <button class="pw-toggle" onclick="togglePw('pw-current',this)">👁</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Nueva Contraseña</label>
+        <div class="pw-wrap">
+          <input type="password" id="pw-new" placeholder="Mínimo 6 caracteres"/>
+          <button class="pw-toggle" onclick="togglePw('pw-new',this)">👁</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Confirmar Nueva Contraseña</label>
+        <div class="pw-wrap">
+          <input type="password" id="pw-confirm"/>
+          <button class="pw-toggle" onclick="togglePw('pw-confirm',this)">👁</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closePwModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="savePasswordChange()">Cambiar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ZONAS={
+  A:["Aguas Negras","El Cerro","Jose Olano Arismendi","Los Aromos","Manuel Rodriguez",
+     "Mataquito","Mejillones","Pedro Nolasco","Prosperidad","Santa Fe","Santos Martinez","Sol de Septiembre"],
+  B:["Ampurdan","Comalle","Convento Viejo","Cuatro Bocas el Plumero","El Pasillo",
+     "El Porvenir","El Prado","Isla de Marchant","Las Lilas","Los Guindos","Tutuquen Alto","Tutuquen Bajo","Vista Hermosa"]
+};
+const DEFAULT_USERS=[
+  {id:'1',username:'admin',    nombre:'Administrador',    rol:'Administrador',pass:'admin123'},
+  {id:'2',username:'secretaria',nombre:'Secretaria',     rol:'Secretario',   pass:'secre123'},
+  {id:'3',username:'pastor',   nombre:'Pastor Principal',rol:'Pastor',        pass:'pastor123'}
+];
+
+let GAS_URL='https://script.google.com/macros/s/AKfycbxO9sk2G05o6Nr6wdPgZKadtXhkfHcQO-raQAMUctT4axvsh88fId57thpxxSjpltlnvQ/exec',members=[],users=JSON.parse(JSON.stringify(DEFAULT_USERS)),currentUser=null,isDemo=false;
+
+// ===== DRIVE BRIDGE (POST para evitar pérdida de parámetros en redirección) =====
+async function post(url, body){
+  const r = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'text/plain' } // text/plain evita preflight CORS
+  });
+  return await r.json();
+}
+async function driveRead(sheet){
+  if(isDemo)return null;
+  const j = await post(GAS_URL, {action:'read', sheet});
+  return j.error ? null : j.data;
+}
+async function driveWrite(sheet, rows){
+  if(isDemo)return;
+  await post(GAS_URL, {action:'write', sheet, rows});
+}
+async function drivePing(url){
+  return await post(url, {action:'ping'});
+}
+
+// ===== SYNC =====
+function setSyncBadge(state,msg){
+  const b=document.getElementById('sync-badge');
+  b.style.display='inline';
+  b.className='sync-status '+(state==='ok'?'sync-ok':state==='err'?'sync-err':'sync-ing');
+  b.textContent=msg;
+}
+async function saveMembersToSheet(){
+  if(isDemo)return;
+  setSyncBadge('ing','⏳ Guardando…');
+  const rows=[['ID','Nombres','Apellidos','Zona','Local','Nacimiento','Estado Civil','Casamiento','Cónyuge','Teléfono','Profesión']];
+  members.forEach(m=>rows.push([m.id,m.nombres,m.apellidos,m.zona,m.local,m.nacimiento,m.estado,m.casamiento,m.esposo,'+569'+m.telefono,m.profesion]));
+  await driveWrite('Miembros',rows);
+  setSyncBadge('ok','✅ Guardado en Drive');
+}
+async function saveUsersToSheet(){
+  if(isDemo)return;
+  const rows=[['ID','Usuario','Nombre','Rol','Contraseña']];
+  users.forEach(u=>rows.push([u.id,u.username,u.nombre,u.rol,u.pass]));
+  await driveWrite('Usuarios',rows);
+}
+async function loadAll(){
+  if(isDemo)return;
+  setSyncBadge('ing','⏳ Cargando Drive…');
+  const mData=await driveRead('Miembros');
+  if(mData&&mData.length>1){
+    members=mData.slice(1).filter(r=>r[0]).map(r=>({
+      id:r[0],nombres:r[1]||'',apellidos:r[2]||'',zona:r[3]||'',local:r[4]||'',
+      nacimiento:toInputDate(r[5]),estado:r[6]||'',casamiento:toInputDate(r[7]),
+      esposo:r[8]||'',telefono:stripPrefix(r[9]),profesion:r[10]||''
+    }));
+  }
+  const uData=await driveRead('Usuarios');
+  if(uData&&uData.length>1){
+    const loaded=uData.slice(1).filter(r=>r[0]).map(r=>({
+      id:String(r[0]),username:r[1]||'',nombre:r[2]||'',rol:r[3]||'Secretario',pass:r[4]||''
+    }));
+    if(loaded.length)users=loaded;
+  }else{await saveUsersToSheet();}
+  // Liderazgo
+  const lData=await driveRead('Liderazgo');
+  if(lData&&lData.length>1){
+    liderazgo=lData.slice(1).filter(r=>r[0]).map(r=>({
+      id:String(r[0]),zona:r[1]||'',local:r[2]||'',cargo:r[3]||'',miembroId:String(r[4]||''),miembroNombre:r[5]||''
+    }));
+  }
+  // Directiva
+  const dData=await driveRead('Directiva');
+  if(dData&&dData.length>1){
+    directiva=dData.slice(1).filter(r=>r[0]).map(r=>({
+      id:String(r[0]),cargo:r[1]||'',miembroId:String(r[2]||''),miembroNombre:r[3]||''
+    }));
+  }
+  setSyncBadge('ok','✅ Drive conectado');
+}
+
+// ===== SETUP =====
+function copyScript(){
+  navigator.clipboard.writeText(document.getElementById('script-code').textContent).then(()=>{
+    const b=document.querySelector('.copy-btn');b.textContent='✓ Copiado';setTimeout(()=>b.textContent='Copiar',2500);
+  });
+}
+async function initDrive(){
+  const url=document.getElementById('setup-url').value.trim();
+  if(!url.startsWith('https://script.google.com')){showAlert('setup-alert','URL inválida. Debe comenzar con https://script.google.com','error');return;}
+  showAlert('setup-alert','<span class="spinner"></span> Verificando conexión con Drive…','info',0);
+  try{
+    const j=await drivePing(url);
+    if(j.ok){
+      GAS_URL=url;
+      localStorage.setItem('iglesia_gas_url',url);
+      document.getElementById('login-sheet-name').textContent=j.name||'Iglesia — Gestión de Miembros';
+      await loadAll();
+      showScreen('login');
+    }else{showAlert('setup-alert','Respuesta inesperada. Verifique la URL y permisos.','error');}
+  }catch(e){showAlert('setup-alert','No se pudo conectar. Asegúrese de que el acceso es "Cualquier persona" y la URL es correcta.','error');}
+}
+function demoMode(){
+  isDemo=true;
+  members=[
+    {id:'s1',nombre:'María González',zona:'A',local:'Santa Fe',nacimiento:'1985-03-15',estado:'Casado/a',casamiento:'2010-06-20',esposo:'Pedro González',telefono:'+56912345678',profesion:'Profesora'},
+    {id:'s2',nombre:'Juan Hernández',zona:'B',local:'Comalle',nacimiento:'1972-11-02',estado:'Casado/a',casamiento:'1998-04-14',esposo:'Ana Hernández',telefono:'+56987654321',profesion:'Agricultor'},
+    {id:'s3',nombre:'Rosa Martínez',zona:'A',local:'Mataquito',nacimiento:'1990-07-28',estado:'Soltero/a',casamiento:'',esposo:'',telefono:'+56911223344',profesion:'Enfermera'},
+  ];
+  showScreen('login');
+}
+
+// ===== AUTH =====
+function doLogin(){
+  const username=document.getElementById('login-user').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const user=users.find(u=>u.username===username&&u.pass===pass);
+  if(!user){showAlert('login-alert','Usuario o contraseña incorrectos.','error');return;}
+  currentUser=user;
+  document.getElementById('topbar-role').textContent=user.rol;
+  document.getElementById('topbar-name').textContent=user.nombre;
+  document.querySelectorAll('.tab-pastor-admin').forEach(el=>
+    el.style.display=(user.rol==='Administrador'||user.rol==='Pastor')?'block':'none');
+  document.querySelectorAll('.tab-admin-only').forEach(el=>
+    el.style.display=user.rol==='Administrador'?'block':'none');
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  if(!isDemo)setSyncBadge('ok','✅ Drive conectado');
+  showScreen('app');renderDashboard();
+}
+function doLogout(){currentUser=null;showScreen('login');}
+
+// ===== UTILS =====
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function stripPrefix(v){
+  if(!v&&v!==0)return '';
+  const s=String(v).replace(/\D/g,'');
+  // Si tiene 11 dígitos comenzando con 569, quitar prefijo
+  if(s.startsWith('569')&&s.length===11)return s.slice(3);
+  // Si tiene 9 dígitos comenzando con 9
+  if(s.startsWith('9')&&s.length===9)return s.slice(1);
+  // Devolver últimos 8 si hay más
+  return s.slice(-8);
+}
+function validatePhone(input, alertId){
+  const v=input.value.replace(/\D/g,'');
+  input.value=v;
+  const el=document.getElementById(alertId);
+  if(!el)return true;
+  if(v.length>0&&v.length<8){
+    el.innerHTML='<div class="alert alert-error" style="padding:6px 10px;font-size:.78rem;margin:4px 0 0">⚠ Faltan '+(8-v.length)+' dígito(s)</div>';
+    return false;
+  }else{el.innerHTML='';return true;}
+}
+function toInputDate(d){
+  if(!d||d==='') return '';
+  const s=String(d);
+  // Si ya viene en formato YYYY-MM-DD, devolver directo sin pasar por Date()
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // Si viene como ISO (tiene T), extraer solo la parte de fecha sin convertir zona horaria
+  if(s.includes('T')){
+    return s.substring(0,10);
+  }
+  // Fallback: usar Date pero compensar offset UTC
+  const dt=new Date(s);
+  if(!isNaN(dt.getTime())){
+    // Usar UTC methods para evitar desfase de zona horaria
+    const yyyy=dt.getUTCFullYear();
+    const mm=String(dt.getUTCMonth()+1).padStart(2,'0');
+    const dd=String(dt.getUTCDate()).padStart(2,'0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return s;
+}
+function fmtDate(d){
+  if(!d||d==='') return '—';
+  const s=String(d);
+  // Si viene como YYYY-MM-DD parsear directo sin zona horaria
+  const iso=/^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+  if(iso) return `${iso[3]}/${iso[2]}/${iso[1]}`;
+  // Si viene como ISO con T, extraer partes UTC
+  if(s.includes('T')){
+    const dt=new Date(s);
+    if(!isNaN(dt.getTime())){
+      return `${String(dt.getUTCDate()).padStart(2,'0')}/${String(dt.getUTCMonth()+1).padStart(2,'0')}/${dt.getUTCFullYear()}`;
+    }
+  }
+  return d;
+}
+function togglePw(id,btn){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈';}
+function showAlert(id,msg,type='info',dur=4000){const el=document.getElementById(id);if(!el)return;el.innerHTML=`<div class="alert alert-${type}">${msg}</div>`;if(dur)setTimeout(()=>{if(el)el.innerHTML='';},dur);}
+function showScreen(name){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(name+'-screen').classList.add('active');}
+function switchTab(el){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+el.dataset.tab).classList.add('active');
+  const t=el.dataset.tab;
+  if(t==='dashboard')renderDashboard();
+  if(t==='members')renderMembers();
+  if(t==='users')renderUsers();
+  if(t==='passwords')renderPasswords();
+  if(t==='liderazgo'){renderLiderazgo();populateDirMiembro();}
+  if(t==='directiva'){populateDirMiembro();renderDirectiva();}
+}
+function updateLocales(zId,lId){
+  const zona=document.getElementById(zId).value;
+  const sel=document.getElementById(lId);
+  sel.innerHTML='<option value="">— Seleccione local —</option>';
+  if(zona&&ZONAS[zona])ZONAS[zona].forEach(l=>sel.add(new Option(l,l)));
+}
+function setLocalVal(zId,lId,val){updateLocales(zId,lId);document.getElementById(lId).value=val;}
+function gf(id){return document.getElementById(id).value.trim();}
+
+// ===== DASHBOARD =====
+function renderDashboard(){
+  const z={A:0,B:0},cas=members.filter(m=>m.estado==='Casado/a').length;
+  members.forEach(m=>{if(m.zona)z[m.zona]=(z[m.zona]||0)+1;});
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat-card"><div class="num">${members.length}</div><div class="lbl">Total Miembros</div></div>
+    <div class="stat-card"><div class="num">${z.A||0}</div><div class="lbl">Zona A</div></div>
+    <div class="stat-card"><div class="num">${z.B||0}</div><div class="lbl">Zona B</div></div>
+    <div class="stat-card"><div class="num">${cas}</div><div class="lbl">Casados/as</div></div>`;
+  const last=[...members].reverse().slice(0,8);
+  document.getElementById('dash-tbody').innerHTML=last.length
+    ?last.map(m=>`<tr><td><b>${m.nombres} ${m.apellidos}</b></td><td><span class="badge badge-${(m.zona||'a').toLowerCase()}">${m.zona||'—'}</span></td><td>${m.local||'—'}</td><td>${m.estado||'—'}</td><td>${m.telefono?'+569'+m.telefono:'—'}</td></tr>`).join('')
+    :'<tr class="empty-row"><td colspan="5">No hay registros aún</td></tr>';
+}
+
+// ===== MEMBERS =====
+function normalize(s){return (s||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+function findDuplicate(data, excludeId){
+  return members.find(m=>{
+    if(m.id===excludeId)return false;
+    const sameName = normalize(m.nombres)===normalize(data.nombres) && normalize(m.apellidos)===normalize(data.apellidos);
+    // 1. Mismo nombre + apellido + fecha nacimiento → misma persona seguro
+    if(sameName && data.nacimiento && m.nacimiento && m.nacimiento===data.nacimiento) return true;
+    // 2. Mismo nombre + apellido + cónyuge (evita registrar al mismo matrimonio dos veces con nombre invertido)
+    if(sameName && data.esposo && normalize(m.esposo)===normalize(data.esposo)) return true;
+    // 3. Mismo nombre + apellido sin más datos (nombre exacto duplicado igual es sospechoso)
+    if(sameName && !data.nacimiento && !data.esposo) return true;
+    // 4. Teléfono duplicado (si se ingresó)
+    if(data.telefono && data.telefono.length===8 && m.telefono===data.telefono) return true;
+    return false;
+  });
+}
+function duplicateMsg(dup){
+  return `⚠ Ya existe un registro similar: <b>${dup.nombres} ${dup.apellidos}</b>${dup.nacimiento?' · Nac: '+fmtDate(dup.nacimiento):''}${dup.esposo?' · Cónyuge: '+dup.esposo:''}${dup.telefono?' · Tel: +569 '+dup.telefono:''}`;
+}
+async function saveMember(){
+  const nombres=gf('f-nombres'),apellidos=gf('f-apellidos'),zona=gf('f-zona');
+  if(!nombres){showAlert('add-alert','El nombre es requerido.','error');return;}
+  if(!apellidos){showAlert('add-alert','El apellido es requerido.','error');return;}
+  if(!zona){showAlert('add-alert','Seleccione una zona.','error');return;}
+  const tel=document.getElementById('f-telefono').value.replace(/\D/g,'');
+  if(tel.length>0&&tel.length<8){showAlert('add-alert','El teléfono debe tener exactamente 8 dígitos.','error');return;}
+  const data={nombres,apellidos,nacimiento:gf('f-nacimiento'),esposo:gf('f-esposo'),telefono:tel};
+  const dup=findDuplicate(data,null);
+  if(dup){showAlert('add-alert',duplicateMsg(dup),'error',8000);return;}
+  members.push({id:uid(),nombres,apellidos,zona,local:gf('f-local'),
+    nacimiento:gf('f-nacimiento'),estado:gf('f-estado'),casamiento:gf('f-casamiento'),
+    esposo:gf('f-esposo'),telefono:tel,profesion:gf('f-profesion')});
+  await saveMembersToSheet();
+  showAlert('add-alert',isDemo?'✅ Miembro agregado (modo demo).':'✅ Miembro guardado en Google Drive.','success');
+  clearAddForm();
+}
+function clearAddForm(){
+  ['f-nombres','f-apellidos','f-zona','f-local','f-nacimiento','f-estado','f-casamiento','f-esposo','f-telefono','f-profesion']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-local').innerHTML='<option value="">— Primero elija zona —</option>';
+  document.getElementById('add-alert').innerHTML='';
+}
+function renderMembers(){
+  const search=(document.getElementById('search-input').value||'').toLowerCase();
+  const fz=document.getElementById('filter-zona').value;
+  const filtered=members.filter(m=>{
+    const mz=!fz||m.zona===fz;
+    const ms=!search||[m.nombres,m.apellidos,m.local,m.profesion,m.estado,m.telefono].join(' ').toLowerCase().includes(search);
+    return mz&&ms;
+  });
+  const canEdit=currentUser&&(currentUser.rol==='Administrador'||currentUser.rol==='Pastor');
+  const canDel=currentUser&&currentUser.rol==='Administrador';
+  document.getElementById('members-tbody').innerHTML=filtered.length
+    ?filtered.map((m,i)=>`<tr>
+        <td style="color:#bbb;font-size:.72rem">${i+1}</td>
+        <td><b>${m.nombres||''}</b></td>
+        <td><b>${m.apellidos||''}</b></td>
+        <td><span class="badge badge-${(m.zona||'a').toLowerCase()}">${m.zona||'—'}</span></td>
+        <td>${m.local||'—'}</td><td>${fmtDate(m.nacimiento)}</td>
+        <td>${m.estado||'—'}</td><td>${m.esposo||'—'}</td>
+        <td>${m.telefono?'+569 '+m.telefono:'—'}</td><td>${m.profesion||'—'}</td>
+        <td class="actions-cell">
+          ${canEdit?`<button class="btn btn-secondary btn-xs" onclick="openEdit('${m.id}')">✏</button>`:''}
+          ${canDel?`<button class="btn btn-danger btn-xs" onclick="deleteMember('${m.id}')">🗑</button>`:''}
+        </td>
+      </tr>`).join('')
+    :'<tr class="empty-row"><td colspan="11">No se encontraron resultados</td></tr>';
+  document.getElementById('members-count').textContent=`Mostrando ${filtered.length} de ${members.length} miembro(s)`;
+}
+async function deleteMember(id){
+  if(!confirm('¿Eliminar este miembro? Esta acción no se puede deshacer.'))return;
+  members=members.filter(m=>m.id!==id);
+  await saveMembersToSheet();renderMembers();
+}
+function openEdit(id){
+  const m=members.find(x=>x.id===id);if(!m)return;
+  document.getElementById('edit-id').value=id;
+  document.getElementById('e-nombres').value=m.nombres||'';
+  document.getElementById('e-apellidos').value=m.apellidos||'';
+  document.getElementById('e-zona').value=m.zona;
+  setLocalVal('e-zona','e-local',m.local);
+  document.getElementById('e-nacimiento').value=m.nacimiento;
+  document.getElementById('e-estado').value=m.estado;
+  document.getElementById('e-casamiento').value=m.casamiento;
+  document.getElementById('e-esposo').value=m.esposo;
+  document.getElementById('e-telefono').value=m.telefono||'';
+  document.getElementById('e-profesion').value=m.profesion;
+  document.getElementById('edit-modal').style.display='flex';
+}
+function closeModal(){document.getElementById('edit-modal').style.display='none';}
+async function updateMember(){
+  const id=document.getElementById('edit-id').value;
+  const idx=members.findIndex(m=>m.id===id);if(idx<0)return;
+  const tel=document.getElementById('e-telefono').value.replace(/\D/g,'');
+  if(tel.length>0&&tel.length<8){
+    document.getElementById('edit-phone-alert').innerHTML='<div class="alert alert-error" style="padding:6px 10px;font-size:.78rem;margin:4px 0 0">⚠ El teléfono debe tener 8 dígitos.</div>';
+    return;
+  }
+  const data={nombres:gf('e-nombres'),apellidos:gf('e-apellidos'),nacimiento:gf('e-nacimiento'),esposo:gf('e-esposo'),telefono:tel};
+  const dup=findDuplicate(data,id);
+  if(dup){
+    document.getElementById('edit-phone-alert').innerHTML=`<div class="alert alert-error" style="margin:8px 0 0">${duplicateMsg(dup)}</div>`;
+    return;
+  }
+  members[idx]={id,nombres:data.nombres,apellidos:data.apellidos,zona:gf('e-zona'),local:gf('e-local'),
+    nacimiento:data.nacimiento,estado:gf('e-estado'),casamiento:gf('e-casamiento'),
+    esposo:data.esposo,telefono:tel,profesion:gf('e-profesion')};
+  await saveMembersToSheet();closeModal();renderMembers();
+}
+
+// ===== USERS =====
+function renderUsers(){
+  document.getElementById('users-tbody').innerHTML=users.map(u=>`<tr>
+    <td><b>${u.username}</b></td><td>${u.nombre}</td>
+    <td><span class="badge badge-${u.rol==='Administrador'?'admin':u.rol==='Pastor'?'pastor':'secre'}">${u.rol}</span></td>
+    <td class="actions-cell">
+      ${currentUser?.rol==='Administrador'?`<button class="btn btn-secondary btn-xs" onclick="editUserForm('${u.id}')">✏</button>`:''}
+      ${currentUser?.rol==='Administrador'&&users.length>1?`<button class="btn btn-danger btn-xs" onclick="deleteUser('${u.id}')">🗑</button>`:''}
+      ${currentUser?.id===u.id?`<button class="btn btn-ghost btn-xs" onclick="openPwModal('${u.id}')">🔑 Mi contraseña</button>`:''}
+    </td>
+  </tr>`).join('');
+}
+async function saveUser(){
+  const username=gf('u-username'),nombre=gf('u-nombre'),rol=document.getElementById('u-rol').value;
+  const pass=document.getElementById('u-pass').value,eid=document.getElementById('edit-uid').value;
+  if(!username||!nombre){showAlert('users-alert','Complete usuario y nombre.','error');return;}
+  if(eid){
+    const idx=users.findIndex(u=>u.id===eid);if(idx<0)return;
+    users[idx].username=username;users[idx].nombre=nombre;users[idx].rol=rol;
+    if(pass){if(pass.length<6){showAlert('users-alert','Mínimo 6 caracteres.','error');return;}users[idx].pass=pass;}
+  }else{
+    if(!pass||pass.length<6){showAlert('users-alert','La contraseña debe tener al menos 6 caracteres.','error');return;}
+    if(users.find(u=>u.username===username)){showAlert('users-alert','Ese usuario ya existe.','error');return;}
+    users.push({id:uid(),username,nombre,rol,pass});
+  }
+  await saveUsersToSheet();clearUserForm();renderUsers();
+  showAlert('users-alert','✅ Usuario guardado en Drive.','success');
+}
+function editUserForm(id){
+  const u=users.find(x=>x.id===id);if(!u)return;
+  document.getElementById('edit-uid').value=u.id;
+  document.getElementById('u-username').value=u.username;
+  document.getElementById('u-nombre').value=u.nombre;
+  document.getElementById('u-rol').value=u.rol;
+  document.getElementById('u-pass').value='';
+  document.getElementById('u-pass').placeholder='Dejar vacío para no cambiar';
+}
+async function deleteUser(id){
+  if(currentUser?.id===id){showAlert('users-alert','No puede eliminar su propio usuario.','error');return;}
+  if(!confirm('¿Eliminar usuario?'))return;
+  users=users.filter(u=>u.id!==id);await saveUsersToSheet();renderUsers();
+}
+function clearUserForm(){
+  ['u-username','u-nombre','u-pass'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('edit-uid').value='';
+  document.getElementById('u-pass').placeholder='Mínimo 6 caracteres';
+}
+
+// ===== PASSWORDS =====
+function renderPasswords(){
+  document.getElementById('passwords-tbody').innerHTML=users.map(u=>`<tr>
+    <td><b>${u.username}</b></td><td>${u.nombre}</td>
+    <td><span class="badge badge-${u.rol==='Administrador'?'admin':u.rol==='Pastor'?'pastor':'secre'}">${u.rol}</span></td>
+    <td><code style="background:#f0e9d8;padding:2px 10px;border-radius:4px;font-size:.83rem;letter-spacing:.03em">${u.pass}</code></td>
+  </tr>`).join('');
+}
+
+// ===== CHANGE PASSWORD =====
+function openPwModal(id){
+  document.getElementById('pw-target-id').value=id;
+  ['pw-current','pw-new','pw-confirm'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('pw-modal-alert').innerHTML='';
+  document.getElementById('pw-modal').style.display='flex';
+}
+function closePwModal(){document.getElementById('pw-modal').style.display='none';}
+async function savePasswordChange(){
+  const id=document.getElementById('pw-target-id').value;
+  const cur=document.getElementById('pw-current').value;
+  const nw=document.getElementById('pw-new').value;
+  const conf=document.getElementById('pw-confirm').value;
+  const user=users.find(u=>u.id===id);if(!user)return;
+  if(user.pass!==cur){showAlert('pw-modal-alert','Contraseña actual incorrecta.','error',0);return;}
+  if(nw.length<6){showAlert('pw-modal-alert','Mínimo 6 caracteres.','error',0);return;}
+  if(nw!==conf){showAlert('pw-modal-alert','Las contraseñas no coinciden.','error',0);return;}
+  user.pass=nw;if(currentUser?.id===id)currentUser.pass=nw;
+  await saveUsersToSheet();closePwModal();
+  showAlert('users-alert','✅ Contraseña actualizada.','success');
+}
+
+// ===== EXPORT =====
+function exportCSV(){
+  const h=['ID','Nombres','Apellidos','Zona','Local','Nacimiento','Estado Civil','Fecha Casamiento','Cónyuge','Teléfono','Profesión'];
+  const rows=members.map(m=>[m.id,m.nombres,m.apellidos,m.zona,m.local,m.nacimiento,m.estado,m.casamiento,m.esposo,m.telefono?'+569'+m.telefono:'',m.profesion]);
+  const csv='\uFEFF'+[h,...rows].map(r=>r.map(c=>`"${(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='miembros_iglesia.csv';a.click();
+}
+
+// ===== LIDERAZGO LOCAL =====
+const CARGOS_OBLIGATORIOS = ['Guía ★','Secretario/a ★','Tesorero/a ★'];
+let liderazgo = []; // {id, zona, local, cargo, miembroId, miembroNombre}
+
+async function saveLiderazgoToSheet(){
+  if(isDemo)return;
+  setSyncBadge('ing','⏳ Guardando…');
+  const rows=[['ID','Zona','Local','Cargo','MiembroID','MiembroNombre']];
+  liderazgo.forEach(l=>rows.push([l.id,l.zona,l.local,l.cargo,l.miembroId,l.miembroNombre]));
+  await driveWrite('Liderazgo',rows);
+  setSyncBadge('ok','✅ Guardado en Drive');
+}
+
+function lidUpdateLocal(){
+  const zona=document.getElementById('lid-zona').value;
+  const sel=document.getElementById('lid-local');
+  sel.innerHTML='<option value="">— Seleccione local —</option>';
+  if(zona&&ZONAS[zona]) ZONAS[zona].forEach(l=>sel.add(new Option(l,l)));
+  document.getElementById('lid-miembro').innerHTML='<option value="">— Primero elija local —</option>';
+}
+function lidUpdateMiembro(){
+  const zona=document.getElementById('lid-zona').value;
+  const local=document.getElementById('lid-local').value;
+  const sel=document.getElementById('lid-miembro');
+  sel.innerHTML='<option value="">— Seleccione miembro —</option>';
+  if(!local)return;
+  const filtered=members.filter(m=>m.zona===zona&&m.local===local);
+  if(!filtered.length){sel.innerHTML='<option value="">No hay miembros en este local</option>';return;}
+  filtered.sort((a,b)=>(a.apellidos+a.nombres).localeCompare(b.apellidos+b.nombres));
+  filtered.forEach(m=>sel.add(new Option(`${m.apellidos}, ${m.nombres}`,m.id)));
+}
+function lidFilterLocal(){
+  const zona=document.getElementById('lid-filter-zona').value;
+  const sel=document.getElementById('lid-filter-local');
+  sel.innerHTML='<option value="">Todos los Locales</option>';
+  if(zona&&ZONAS[zona]) ZONAS[zona].forEach(l=>sel.add(new Option(l,l)));
+}
+function clearLidForm(){
+  ['lid-zona','lid-local','lid-cargo','lid-miembro'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lid-edit-id').value='';
+  document.getElementById('lid-local').innerHTML='<option value="">— Primero elija zona —</option>';
+  document.getElementById('lid-miembro').innerHTML='<option value="">— Primero elija local —</option>';
+}
+async function saveLiderazgo(){
+  const zona=gf('lid-zona'),local=gf('lid-local'),cargo=gf('lid-cargo'),miembroId=gf('lid-miembro');
+  if(!zona||!local||!cargo||!miembroId){showAlert('lid-alert','Complete todos los campos.','error');return;}
+  const editId=document.getElementById('lid-edit-id').value;
+  const miembro=members.find(m=>m.id===miembroId);
+  if(!miembro){showAlert('lid-alert','Miembro no encontrado.','error');return;}
+  const miembroNombre=`${miembro.nombres} ${miembro.apellidos}`;
+  // Verificar que el cargo no esté ya asignado en ese local (excepto al editar)
+  const dup=liderazgo.find(l=>l.zona===zona&&l.local===local&&l.cargo===cargo&&l.id!==editId);
+  if(dup){showAlert('lid-alert',`El cargo <b>${cargo}</b> ya está asignado en ${local} a <b>${dup.miembroNombre}</b>. Edite ese registro para cambiarlo.`,'error',7000);return;}
+  if(editId){
+    const idx=liderazgo.findIndex(l=>l.id===editId);
+    if(idx>=0) liderazgo[idx]={id:editId,zona,local,cargo,miembroId,miembroNombre};
+  } else {
+    liderazgo.push({id:uid(),zona,local,cargo,miembroId,miembroNombre});
+  }
+  await saveLiderazgoToSheet();
+  clearLidForm();
+  renderLiderazgo();
+  showAlert('lid-alert','✅ Cargo asignado correctamente.','success');
+}
+function editLiderazgo(id){
+  const l=liderazgo.find(x=>x.id===id);if(!l)return;
+  document.getElementById('lid-edit-id').value=l.id;
+  document.getElementById('lid-zona').value=l.zona;
+  lidUpdateLocal();
+  document.getElementById('lid-local').value=l.local;
+  lidUpdateMiembro();
+  document.getElementById('lid-cargo').value=l.cargo;
+  document.getElementById('lid-miembro').value=l.miembroId;
+}
+async function deleteLiderazgo(id){
+  if(!confirm('¿Quitar este cargo asignado?'))return;
+  liderazgo=liderazgo.filter(l=>l.id!==id);
+  await saveLiderazgoToSheet();renderLiderazgo();
+}
+function renderLiderazgo(){
+  const fz=document.getElementById('lid-filter-zona').value;
+  const fl=document.getElementById('lid-filter-local').value;
+  const canEdit=currentUser&&(currentUser.rol==='Administrador'||currentUser.rol==='Pastor');
+  const filtered=liderazgo.filter(l=>(!fz||l.zona===fz)&&(!fl||l.local===fl));
+  // Sort: zona → local → cargo
+  filtered.sort((a,b)=>a.zona.localeCompare(b.zona)||a.local.localeCompare(b.local)||a.cargo.localeCompare(b.cargo));
+  document.getElementById('liderazgo-tbody').innerHTML=filtered.length
+    ?filtered.map(l=>`<tr>
+        <td><span class="badge badge-${l.zona.toLowerCase()}">${l.zona}</span></td>
+        <td>${l.local}</td>
+        <td><span class="badge-cargo ${CARGOS_OBLIGATORIOS.includes(l.cargo)?'cargo-req':'cargo-opt'}">${l.cargo}</span></td>
+        <td>${l.miembroNombre}</td>
+        <td class="actions-cell">
+          ${canEdit?`<button class="btn btn-secondary btn-xs" onclick="editLiderazgo('${l.id}')">✏</button>`:''}
+          ${canEdit?`<button class="btn btn-danger btn-xs" onclick="deleteLiderazgo('${l.id}')">🗑</button>`:''}
+        </td>
+      </tr>`).join('')
+    :'<tr class="empty-row"><td colspan="5">No hay cargos asignados</td></tr>';
+  // Check missing required cargos per local
+  const locals=[...new Set(members.map(m=>m.zona+'|'+m.local))];
+  const missing=[];
+  locals.forEach(key=>{
+    const [zona,local]=key.split('|');
+    CARGOS_OBLIGATORIOS.forEach(cargo=>{
+      if(!liderazgo.find(l=>l.zona===zona&&l.local===local&&l.cargo===cargo)){
+        missing.push({zona,local,cargo});
+      }
+    });
+  });
+  const mc=document.getElementById('lid-missing-card');
+  if(missing.length){
+    mc.style.display='block';
+    document.getElementById('lid-missing-tbody').innerHTML=missing.map(m=>`<tr>
+      <td><span class="badge badge-${m.zona.toLowerCase()}">${m.zona}</span></td>
+      <td>${m.local}</td>
+      <td><span style="color:var(--maroon-light);font-weight:700">${m.cargo}</span></td>
+    </tr>`).join('');
+  } else { mc.style.display='none'; }
+}
+
+// ===== DIRECTIVA GENERAL =====
+const DIR_CARGOS_ORDEN = [
+  'Pastor','Ayudante del Pastor',
+  'Pastora','Ayudante de Pastora',
+  'Jefe Coro Oficial','Ayudante Jefe Coro Oficial',
+  'Líder Voluntarios General','Ayudante Líder Voluntarios',
+  'Líder Jóvenes General','Ayudante Líder Jóvenes',
+  'Líder Niños General','Ayudante Líder Niños'
+];
+let directiva = []; // {id, cargo, miembroId, miembroNombre}
+
+async function saveDirectivaToSheet(){
+  if(isDemo)return;
+  setSyncBadge('ing','⏳ Guardando…');
+  const rows=[['ID','Cargo','MiembroID','MiembroNombre']];
+  directiva.forEach(d=>rows.push([d.id,d.cargo,d.miembroId,d.miembroNombre]));
+  await driveWrite('Directiva',rows);
+  setSyncBadge('ok','✅ Guardado en Drive');
+}
+function populateDirMiembro(){
+  const sel=document.getElementById('dir-miembro');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— Seleccione miembro —</option>';
+  const sorted=[...members].sort((a,b)=>(a.apellidos+a.nombres).localeCompare(b.apellidos+b.nombres));
+  sorted.forEach(m=>sel.add(new Option(`${m.apellidos}, ${m.nombres}`,m.id)));
+  if(cur)sel.value=cur;
+}
+function clearDirForm(){
+  document.getElementById('dir-cargo').value='';
+  document.getElementById('dir-miembro').value='';
+  document.getElementById('dir-edit-id').value='';
+}
+async function saveDirectiva(){
+  const cargo=gf('dir-cargo'),miembroId=gf('dir-miembro');
+  const editId=document.getElementById('dir-edit-id').value;
+  if(!cargo||!miembroId){showAlert('dir-alert','Seleccione cargo y miembro.','error');return;}
+  const miembro=members.find(m=>m.id===miembroId);if(!miembro)return;
+  const miembroNombre=`${miembro.nombres} ${miembro.apellidos}`;
+  const dup=directiva.find(d=>d.cargo===cargo&&d.id!==editId);
+  if(dup){showAlert('dir-alert',`El cargo <b>${cargo}</b> ya está asignado a <b>${dup.miembroNombre}</b>. Edite ese registro.`,'error',7000);return;}
+  if(editId){
+    const idx=directiva.findIndex(d=>d.id===editId);
+    if(idx>=0) directiva[idx]={id:editId,cargo,miembroId,miembroNombre};
+  } else {
+    directiva.push({id:uid(),cargo,miembroId,miembroNombre});
+  }
+  await saveDirectivaToSheet();
+  clearDirForm();renderDirectiva();
+  showAlert('dir-alert','✅ Cargo asignado correctamente.','success');
+}
+function editDirectiva(id){
+  const d=directiva.find(x=>x.id===id);if(!d)return;
+  document.getElementById('dir-edit-id').value=d.id;
+  document.getElementById('dir-cargo').value=d.cargo;
+  populateDirMiembro();
+  document.getElementById('dir-miembro').value=d.miembroId;
+}
+async function deleteDirectiva(id){
+  if(!confirm('¿Quitar este cargo?'))return;
+  directiva=directiva.filter(d=>d.id!==id);
+  await saveDirectivaToSheet();renderDirectiva();
+}
+function renderDirectiva(){
+  const canEdit=currentUser&&(currentUser.rol==='Administrador'||currentUser.rol==='Pastor');
+  // Renderizar en el orden definido, luego los que no estén en el orden
+  const byOrder=(cargo)=>DIR_CARGOS_ORDEN.indexOf(cargo);
+  const sorted=[...directiva].sort((a,b)=>{
+    const oa=byOrder(a.cargo),ob=byOrder(b.cargo);
+    if(oa===-1&&ob===-1)return a.cargo.localeCompare(b.cargo);
+    if(oa===-1)return 1; if(ob===-1)return -1;
+    return oa-ob;
+  });
+  // Build rows including empty slots for cargos not yet assigned
+  const rows=[];
+  DIR_CARGOS_ORDEN.forEach(cargo=>{
+    const assigned=directiva.find(d=>d.cargo===cargo);
+    const isAyudante=cargo.startsWith('Ayudante');
+    rows.push({cargo,assigned,isAyudante});
+  });
+  document.getElementById('directiva-tbody').innerHTML=rows.map(({cargo,assigned,isAyudante})=>`<tr ${isAyudante?'style="background:#f8faff"':''}>
+    <td style="${isAyudante?'padding-left:28px;color:#666':'font-weight:700'}">${isAyudante?'↳ ':''}<span class="badge-cargo ${assigned?'cargo-opt':'cargo-empty'}">${cargo}</span></td>
+    <td>${assigned?`<b>${assigned.miembroNombre}</b>`:'<span style="color:#bbb;font-style:italic">Sin asignar</span>'}</td>
+    <td class="actions-cell">
+      ${assigned&&canEdit?`<button class="btn btn-secondary btn-xs" onclick="editDirectiva('${assigned.id}')">✏</button>`:''}
+      ${assigned&&canEdit?`<button class="btn btn-danger btn-xs" onclick="deleteDirectiva('${assigned.id}')">🗑</button>`:''}
+      ${!assigned&&canEdit?`<button class="btn btn-ghost btn-xs" onclick="quickAssign('${cargo}')">➕ Asignar</button>`:''}
+    </td>
+  </tr>`).join('');
+}
+function quickAssign(cargo){
+  document.getElementById('dir-cargo').value=cargo;
+  populateDirMiembro();
+  document.getElementById('dir-edit-id').value='';
+}
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  loadAll().catch(() => {});
+});
+</script>
+</body>
+</html>
